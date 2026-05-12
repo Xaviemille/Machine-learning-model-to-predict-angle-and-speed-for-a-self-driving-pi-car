@@ -50,6 +50,8 @@ Instead of training a CNN from scratch, this implementation uses **MobileNetV3-S
 
 Expected dataset structure:
 
+NB: Training Data not provided, contact me if needed
+
 ```bash
 training_data/
 │
