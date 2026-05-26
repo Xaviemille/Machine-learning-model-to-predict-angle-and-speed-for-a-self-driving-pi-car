@@ -24,6 +24,7 @@ def train_one_epoch(model, loader, optimiser, scaler, device):
         total_loss += loss.item() * imgs.size(0)
     return total_loss / len(loader.dataset)
 
+
 @torch.no_grad()
 def evaluate(model, loader, device):
     model.eval()
@@ -33,4 +34,4 @@ def evaluate(model, loader, device):
         labels = labels.to(device)
         preds  = model(imgs)
         total_loss += mse_loss(preds, labels).item() * imgs.size(0)
-    return total_loss /
+    return total_loss / len(loader.dataset)
