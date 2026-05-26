@@ -12,3 +12,13 @@ CACHE_PATH   = Path(os.path.join(DATA_DIR, "combined_valid_ids.csv"))
 NEW_IMG_DIR  = Path(os.path.join(DATA_DIR, "collected_images"))
 
 # Config 
+
+SUBSETS = [
+    "oval_inner",
+    "oval_outer",
+    "figure8",
+    "figure8_object",
+    "tjunc_left",
+    "tjunc_right",
+]
+OVERSAMPLE_FACTOR = 1  
