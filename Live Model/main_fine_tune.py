@@ -12,7 +12,7 @@ from picarnet import PiCarNet
 from data import CarDataset, get_transforms, scan_valid_images
 from train import train_one_epoch, evaluate
 
-# ── Config ────────────────────────────────────────────────────────────────────
+# Config 
 SEED                = 42
 IMG_H               = 120
 IMG_W               = 160
@@ -31,7 +31,7 @@ RUN_NAME            = "finetune_mv3"
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
+# Paths 
 BASE_DIR           = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR           = os.path.dirname(os.path.dirname(BASE_DIR))
 DATA_PATH          = os.path.join(REPO_DIR, "data")
@@ -74,7 +74,7 @@ def set_backbone_grad(model, requires_grad: bool):
 def main():
     set_seed(SEED)
 
-    # ── Data ──────────────────────────────────────────────────────────────────
+    # Data 
     CACHE_PATH = os.path.join(DATA_PATH, "combined_valid_image_ids.csv")
 
     df = pd.read_csv(TRAIN_CSV)
@@ -119,7 +119,7 @@ def main():
     val_loader   = DataLoader(val_ds,   batch_size=BATCH_SIZE,
                               shuffle=False, num_workers=2, pin_memory=True)
 
-    # ── Model: pretrained MV3, frozen backbone ────────────────────────────────
+    # Model: pretrained MV3, frozen backbone 
     model = PiCarNet(
         pretrained=True,
         dropout_rate_first=DROPOUT_FIRST_LAYER,
@@ -136,7 +136,7 @@ def main():
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimiser, T_max=EPOCHS)
     scaler    = torch.amp.GradScaler(enabled=(DEVICE.type == 'cuda'))
 
-    # ── Training loop ─────────────────────────────────────────────────────────
+    # Training loop 
     train_losses, val_losses = [], []
     best_val   = float('inf')
     no_improve = 0
@@ -178,7 +178,7 @@ def main():
 
     print(f"Best validation MSE: {best_val:.6f}")
 
-    # ── Training curve ────────────────────────────────────────────────────────
+    # Training curve 
     plt.figure(figsize=(10, 5))
     plt.plot(train_losses, label='train')
     plt.plot(val_losses,   label='val')
