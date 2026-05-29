@@ -147,7 +147,7 @@ def run(cfg):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser())
+    parser = argparse.ArgumentParser()
     parser.add_argument("--model",         default=CONFIG["model_name"])
     parser.add_argument("--img_dir",       default=CONFIG["img_dir"])
     parser.add_argument("--n",             type=int,   default=CONFIG["n_images"])
