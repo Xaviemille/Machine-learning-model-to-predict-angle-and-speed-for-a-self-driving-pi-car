@@ -146,3 +146,22 @@ def run(cfg):
             print(f"Saved: {save_name}")
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser())
+    parser.add_argument("--model",         default=CONFIG["model_name"])
+    parser.add_argument("--img_dir",       default=CONFIG["img_dir"])
+    parser.add_argument("--n",             type=int,   default=CONFIG["n_images"])
+    parser.add_argument("--skip",          type=int,   default=CONFIG["skip"])
+    parser.add_argument("--crop_top",      type=float, default=CONFIG["crop_top"])
+    parser.add_argument("--crop_bottom",   type=float, default=CONFIG["crop_bottom"])
+    parser.add_argument("--single_output", action="store_true", default=CONFIG["single_output"])
+    args = parser.parse_args()
+
+    CONFIG.update({
+        "model_name"   : args.model,
+        "skip"         : args.skip,
+        "crop_top"     : args.crop_top,
+        "crop_bottom"  : args.crop_bottom,
+        "single_output": args.single_output,
+    })
+    run(CONFIG)
