@@ -87,3 +87,62 @@ def overlay_gradcam(img_bgr, heatmap):
     heatmap = cv2.applyColorMap(np.uint8(255 * heatmap), cv2.COLORMAP_JET)
     return cv2.addWeighted(img_bgr, 0.6, heatmap, 0.4, 0)
 
+# Main 
+def run(cfg):
+    model_path = os.path.join(MODELS_DIR, cfg["model_name"])
+    model = PiCarNet(pretrained=False)
+    model.load_state_dict(torch.load(model_path, map_location="cpu"))
+    model.eval()
+    print(f"Loaded model: {cfg['model_name']}")
+
+    transform = build_transform(
+        cfg["crop_top"], cfg["crop_bottom"], cfg["img_h"], cfg["img_w"]
+    )
+
+    img_files = sorted(Path(cfg["img_dir"]).glob("*.png"))
+    img_files = img_files[cfg["skip"] : cfg["skip"] + cfg["n_images"]]
+    if not img_files:
+        print(f"No images found in {cfg['img_dir']}")
+        return
+
+    outputs = {"angle": 0}
+    if not cfg["single_output"]:
+        outputs["speed"] = 1
+
+    tag         = f"crop{cfg['crop_top']}_{cfg['crop_bottom']}"
+    run_vis_dir = os.path.join(
+        HEATMAPS_DIR, f"{Path(cfg['model_name']).stem}_{tag}"
+    )
+    os.makedirs(run_vis_dir, exist_ok=True)
+    print(f"Saving to: {run_vis_dir}")
+
+    for fpath in img_files:
+        img_bgr = cv2.imread(str(fpath))
+        if img_bgr is None:
+            print(f"Skipping unreadable file: {fpath}")
+            continue
+
+        img_rgb      = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        tensor       = transform(img_rgb).unsqueeze(0)
+        img_rgb_crop = crop_np(img_rgb, cfg["crop_top"], cfg["crop_bottom"])
+        img_bgr_crop = crop_np(img_bgr, cfg["crop_top"], cfg["crop_bottom"])
+
+        for label, idx in outputs.items():
+            heatmap = get_gradcam(model, tensor, output_idx=idx)
+            overlay = overlay_gradcam(img_bgr_crop, heatmap)
+
+            fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+            axes[0].imshow(img_rgb_crop)
+            axes[0].set_title("Original")
+            axes[0].axis("off")
+            axes[1].imshow(cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
+            axes[1].set_title(f"Grad-CAM ({label})")
+            axes[1].axis("off")
+            plt.tight_layout()
+
+            save_name = f"gradcam_{label}_{tag}_{fpath.name}"
+            plt.savefig(os.path.join(run_vis_dir, save_name), dpi=150)
+            plt.close()
+            print(f"Saved: {save_name}")
+
+
