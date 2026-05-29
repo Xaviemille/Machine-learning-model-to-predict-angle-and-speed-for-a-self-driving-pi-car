@@ -159,6 +159,8 @@ if __name__ == "__main__":
 
     CONFIG.update({
         "model_name"   : args.model,
+        "img_dir"      : args.img_dir,
+        "n_images"     : args.n,
         "skip"         : args.skip,
         "crop_top"     : args.crop_top,
         "crop_bottom"  : args.crop_bottom,
