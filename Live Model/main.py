@@ -161,6 +161,17 @@ def main():
 
     print(f"Best validation MSE: {best_val:.6f}")
 
+    # Training curve 
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_losses, label='train')
+    plt.plot(val_losses,   label='val')
+    plt.xlabel('Epoch')
+    plt.ylabel('MSE')
+    plt.title(f'Training Curve — {RUN_NAME}')
+    plt.legend()
+    plt.savefig(TRAINING_CURVE_PATH)
+    plt.close()
+    print(f"Training curve saved to {TRAINING_CURVE_PATH}")
 
 
 if __name__ == "__main__":
